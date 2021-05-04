@@ -20,8 +20,10 @@ SELECTION-SCREEN BEGIN OF BLOCK sel WITH FRAME TITLE TEXT-001.
   TABLES /iwfnd/i_med_srh.
   SELECT-OPTIONS s_serv FOR /iwfnd/i_med_srh-srv_identifier NO INTERVALS MODIF ID p0. "Gateway Service/Servicio Gateway
 
-  PARAMETERS: p_alias LIKE /iwfnd/c_dfsyal-system_alias MATCHCODE OBJECT /iwfnd/sh_sap_sys_alias MODIF ID p0, "System Alias
-              p_trsp  TYPE e071-trkorr MATCHCODE OBJECT irm_transport MODIF ID p0. "Transport Request/Orden de transporte
+  PARAMETERS: p_alias  LIKE /iwfnd/c_dfsyal-system_alias MATCHCODE OBJECT /iwfnd/sh_sap_sys_alias MODIF ID p0, "System Alias
+              p_trsp   TYPE e071-trkorr MATCHCODE OBJECT irm_transport MODIF ID p0, "Transport Request/Orden de transporte
+              p_check1 AS CHECKBOX USER-COMMAND check1, " Asignar system alias / assign system alias
+              p_check2 AS CHECKBOX USER-COMMAND check2. " Eliminar system alias / delete system alias
 
 SELECTION-SCREEN END OF BLOCK sel.
 
@@ -63,7 +65,12 @@ FORM mass_assign  USING    p_s_serv
         ls_mgdeam-is_default   = abap_true. "Default mode
 
         lo_inst_man_dba = /iwfnd/cl_mgw_inst_man_dba=>get_inst_man_dba( ).
-        lo_inst_man_dba->create_mgdeam( is_mgdeam = ls_mgdeam iv_transport = iv_transport ).
+
+        IF p_check1 IS NOT INITIAL.
+          lo_inst_man_dba->create_mgdeam( is_mgdeam = ls_mgdeam iv_transport = iv_transport ).
+        ELSE.
+          lo_inst_man_dba->delete_mgdeam( is_mgdeam = ls_mgdeam iv_transport = iv_transport ).
+        ENDIF.
 
       CATCH /iwfnd/cx_destin_finder INTO lx_destin_finder.
         lv_message = /iwfnd/cl_cof_util=>get_message_text( ix_message = lx_destin_finder ).
@@ -78,17 +85,32 @@ FORM mass_assign  USING    p_s_serv
 
   ENDLOOP.
 
-  WRITE:/10(67) 'Los siguientes servicios se actualizaron:'.
-  NEW-LINE.
-  WRITE:/10 sy-uline(70).
-  WRITE:/10  sy-vline,
-    (66) 'Service ID' COLOR COL_HEADING, sy-vline.
-  NEW-LINE.
-  WRITE:/10 sy-uline(70).
-  LOOP AT lt_srv_identifier INTO l_srv_identifier.
-    WRITE:/10 sy-vline,
-          (66)l_srv_identifier, sy-vline.
-  ENDLOOP.
-  WRITE:/10 sy-uline(70).
+  IF p_check1 IS NOT INITIAL.
+    WRITE:/10(67) 'Los siguientes servicios se actualizaron:'.
+    NEW-LINE.
+    WRITE:/10 sy-uline(70).
+    WRITE:/10  sy-vline,
+      (66) 'Service ID' COLOR COL_HEADING, sy-vline.
+    NEW-LINE.
+    WRITE:/10 sy-uline(70).
+    LOOP AT lt_srv_identifier INTO l_srv_identifier.
+      WRITE:/10 sy-vline,
+            (66)l_srv_identifier, sy-vline.
+    ENDLOOP.
+    WRITE:/10 sy-uline(70).
+  ELSE.
+    WRITE:/10(67) 'Los siguientes servicios se eliminaron:'.
+    NEW-LINE.
+    WRITE:/10 sy-uline(70).
+    WRITE:/10  sy-vline,
+      (66) 'Service ID' COLOR COL_HEADING, sy-vline.
+    NEW-LINE.
+    WRITE:/10 sy-uline(70).
+    LOOP AT lt_srv_identifier INTO l_srv_identifier.
+      WRITE:/10 sy-vline,
+            (66) l_srv_identifier, sy-vline.
+    ENDLOOP.
+    WRITE:/10 sy-uline(70).
+  ENDIF.
 
 ENDFORM.

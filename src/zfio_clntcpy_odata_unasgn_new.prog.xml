@@ -42,6 +42,18 @@
     </item>
     <item>
      <ID>S</ID>
+     <KEY>P_CHECK1</KEY>
+     <ENTRY>Asignar system alias</ENTRY>
+     <LENGTH>28</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_CHECK2</KEY>
+     <ENTRY>Eliminar system alias</ENTRY>
+     <LENGTH>29</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
      <KEY>P_TRSP</KEY>
      <ENTRY>Orden de transporte</ENTRY>
      <LENGTH>27</LENGTH>
