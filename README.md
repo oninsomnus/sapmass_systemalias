@@ -1,3 +1,3 @@
 # SAP Gateway system alias asignment
 
-Mass asignment of OData service system alias in SAP Gateway
+Mass asignment or delete of OData service system alias in SAP Gateway
